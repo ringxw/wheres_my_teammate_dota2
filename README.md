@@ -1,11 +1,11 @@
 # wheres_my_teammate_dota2
 ## To setup virtual environment for the flask application for the first time:
 
-*sudo pip install virtualenv*
+**sudo pip install virtualenv**
 
 Then, run virtual env to create the python virtual environment so it doesn't mess up your computer's default environment 
 
-*virtualenv venv*
+**virtualenv venv**
 
 You can then install flask after activates virtualenv, which is what will be used here
 
@@ -15,7 +15,7 @@ You can then install flask after activates virtualenv, which is what will be use
 
 After this you should see your shell that looks like this
 
-*(venv)* **nans-air:src njiang**
+**(venv) nans-air:src njiang**
 
 Try run python and see if flask is been imported, you should not get any error
 ```
