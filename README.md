@@ -1,5 +1,5 @@
 # wheres_my_teammate_dota2
-## To setup virtual environment for the flask application for the first time:
+### To setup virtual environment for the flask application for the first time:
 
 **sudo pip install virtualenv**
 
