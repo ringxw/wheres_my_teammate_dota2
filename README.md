@@ -29,4 +29,4 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 After the enviornment is set up ,to run the application
 
-**python app.py**
+**python src/app.py**
