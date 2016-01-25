@@ -29,5 +29,8 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 >>>
 
+After the enviornment is set up 
+
 To run the application
+
 python app.py
