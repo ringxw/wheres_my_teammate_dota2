@@ -11,7 +11,7 @@ You can then install flask after activates virtualenv, which is what will be use
 
 *source venv/bin/activate*
 
-*pip install -r requirement.txt*
+*pip install https://github.com/mitsuhiko/flask/tarball/master*
 
 After this you should see your shell that looks like this
 
