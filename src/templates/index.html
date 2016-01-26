@@ -1,12 +1,48 @@
 <!DOCTYPE html>
-<html>
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6 lt8"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7 lt8"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8 lt8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
     <head>
-        <title>This is the index page</title>
+        <meta charset="UTF-8" />
+        <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">  -->
+        <title>Login and Registration Form with HTML5 and CSS3</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="description" content="Login and Registration Form with HTML5 and CSS3" />
+            <meta name="keywords" content="html5, css3, form, switch, animation, :target, pseudo-class" />
     </head>
     <body>
-
-        <h1>Seriously, whats your mmr?</h1>
-        <p>Over 9000??</p>
-
+<form method="post">
+    <fieldset>
+        <legend>Steam ID?</legend>
+        <input id="username" name="username" required="required" type="text" placeholder="myusername or mymail@mail.com"/>
+    </fieldset>
+    <fieldset>
+        <legend>MMR?</legend>
+        <input id="mmr" name="mmr" required="required" type="number" placeholder="9001"/>
+    </fieldset>
+    <fieldset>
+        <legend>Position?</legend>
+        <input type="checkbox" name="player1" value="1" />1: Carry </>
+        <input type="checkbox" name="player2" value="1" />2: Carry (Mid)</>
+        <input type="checkbox" name="player3" value="1" />3: Offlane</>
+        <input type="checkbox" name="player4" value="1" />4: Support </>
+        <input type="checkbox" name="player5" value="1" />5: Support :(</>
+    </fieldset>
+    <fieldset>
+        <legend>Server?</legend>
+        <input type="checkbox" name="usw" value="Cat" />US:W </>
+        <input type="checkbox" name="use" value="Dog" />US:E</>
+        <input type="checkbox" name="china" value="Bird" />CHINA</>
+    </fieldset>
+    <fieldset>
+        <legend>Language?</legend>
+        <input type="checkbox" name="English" value="Cat" />English </>
+        <input type="checkbox" name="Russian" value="Dog" />Russian</>
+        <input type="checkbox" name="Chinese" value="Bird" />Chinese</>
+    </fieldset>
+    <input type="submit" value="Submit now" />
+</form>
     </body>
 </html>
