@@ -24,7 +24,7 @@ def search():
 def _parse_check_box(input_list):
     results = []
     for item in input_list:
-        if request.form.getlist(item):
+        if request.form.get(item):
             results.append(item)
     return results
 
