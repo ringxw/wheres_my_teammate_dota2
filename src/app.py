@@ -3,7 +3,6 @@ import os
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project_name.settings.local")
 
 app = Flask(__name__)
 
