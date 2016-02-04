@@ -1,8 +1,18 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, url_for, abort, redirect
+import os
+from flask import Flask, request, session, g, redirect, url_for, abort, \
+    render_template, flash
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project_name.settings.local")
 
 app = Flask(__name__)
 
+app.config.update(dict(
+    DEBUG=True,
+    SECRET_KEY="development key",
+    USERNAME='admin',
+    PASSWORD='default'
+                  ))
 #Global Vars
 POSITIONS = ['carry', 'mid', 'off', 'support', 'hard_support']
 REGIONS = ['usw', 'use', 'china']
@@ -21,6 +31,29 @@ def search():
     my_results = 'Player {0}, mmr {1}, plays positions {2}, plays on regions {3}, speaks {4}, looking for a teammate!!'.format(request.form['username'], request.form['mmr'], positions, regions, languages)
     return my_results
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        #if request.form['username'] != app.config['USERNAME']:
+        if request.form['username'] != 'OSfrog':
+            error = 'Invalid username'
+        #elif request.form['password'] != app.config['PASSWORD']:
+        elif request.form['password'] != 'bruno':
+            error = 'Invalid password'
+        else:
+            session['logged_in'] = True #seems important, that's how the page knows you are logged in.
+            flash('You were logged in')
+            return redirect(url_for('home'))
+    return render_template('login.html', error=error)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('home'))
+
 def _parse_check_box(input_list):
     results = []
     for item in input_list:
@@ -29,4 +62,5 @@ def _parse_check_box(input_list):
     return results
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.debug = True
+    app.run()

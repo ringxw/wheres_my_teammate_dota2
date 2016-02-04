@@ -4,18 +4,20 @@
 <!--[if IE 8 ]>    <html lang="en" class="no-js ie8 lt8"> <![endif]-->
 <!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="UTF-8" />
-        <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">  -->
-        <title>Login and Registration Form with HTML5 and CSS3</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta name="description" content="Login and Registration Form with HTML5 and CSS3" />
-            <meta name="keywords" content="html5, css3, form, switch, animation, :target, pseudo-class" />
-    </head>
+    {% if not session.logged_in %}
+    <a href="{{ url_for('login') }}">log in</a>
+    {% else %}
+    <a href="{{ url_for('logout') }}">log out</a>
+    {% endif %}
+    </div>
+    {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+    {% block body %}{% endblock %}
     <body>
 <form action="{{ url_for('search') }}" method="post">
     <fieldset>
-        <legend>Steam ID?</legend>
+        <legend><h2>Steam ID?</h2></legend>
         <input name="username" required="required" type="text" placeholder="myusername or mymail@mail.com"/>
     </fieldset>
     <fieldset>
