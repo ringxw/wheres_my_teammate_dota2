@@ -19,5 +19,31 @@ Nans-MacBook-Air:templates njiang$ mongod
 In another terminal, you can connect to the db using the mongo shell, just run
    mongo
 
-After activating virtualenv,  install pymongo for the python mongo lib.  
+Quit the db by ctrl+c
+
+Run mongo in as a daemon, 
+   mongod --fork --logpath /var/log/mongodb/mongodb.log
+Make sure the directory /var/log/mongodb is owned by the user starting the process. 
+
+Import a sample DB into your mongo db, player.json is located in src/db/example_dataset
+   mongoimport --db appdb --collection players --drop --file player.json
+
+After the import succeeded, you can run a query from terminal
+    first, run mongod
+        mongod
+    This should default to your appdb
+    If its not defaulted, use the 'use' command
+        use appdb
+    Then list out your collections
+        show collections
+    Should see a players collection
+
+    Now run a query, and find all players thats a carry
+        db.players.find( { position : "carry" })
+    This should return you the carry players info 
+    Try replace carry with support, and nothing will show up
+
+After activating virtualenv (See Readme),  install pymongo for the python mongo lib.  
     pip install pymongo
+ 
+Run the app, and do a submit test, it'll reach back to db and pull out the entry
