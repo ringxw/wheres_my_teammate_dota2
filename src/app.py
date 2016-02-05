@@ -8,6 +8,14 @@ POSITIONS = ['carry', 'mid', 'off', 'support', 'hard_support']
 REGIONS = ['usw', 'use', 'china']
 LANGUAGES = ['English','Russian','Chinese']
 
+#This will connect to the local mongodby
+def connect_db():
+    return None
+
+#Queries the db with input command and return 
+def query_db(query_cmd):
+    return None
+   
 @app.route('/')
 def home():
     return render_template('index.html')

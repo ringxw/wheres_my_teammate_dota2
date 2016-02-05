@@ -1,0 +1,23 @@
+Install mongo on mac:
+    https://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/
+
+After installation, you can run a local mongo daemon, by running the command
+    mongod
+
+which looks like
+
+Nans-MacBook-Air:templates njiang$ mongod
+2016-02-04T20:57:01.894-0500 I CONTROL  [initandlisten] MongoDB starting : pid=8388 port=27017 dbpath=/data/db 64-bit host=Nans-MacBook-Air.local
+2016-02-04T20:57:01.895-0500 I CONTROL  [initandlisten] db version v3.2.1
+2016-02-04T20:57:01.895-0500 I CONTROL  [initandlisten] git version: a14d55980c2cdc565d4704a7e3ad37e4e535c1b2
+...
+...
+...
+2016-02-04T20:57:03.168-0500 I NETWORK  [initandlisten] waiting for connections on port 27017
+2016-02-04T20:57:18.524-0500 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:52569
+
+In another terminal, you can connect to the db using the mongo shell, just run
+   mongo
+
+After activating virtualenv,  install pymongo for the python mongo lib.  
+    pip install pymongo
