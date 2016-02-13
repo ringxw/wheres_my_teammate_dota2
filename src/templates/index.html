@@ -18,20 +18,32 @@
     {% endfor %}
     {% block body %}{% endblock %}
     <body>
+        
+        
+{% if not session.redo_search %}
 <form action="{{ url_for('search') }}" method="post">
+{% else %}
+<form action="{{ url_for('redo_search') }}" method="post">
+{% endif %}
+
     <fieldset>
-        <legend><h3>Get Matched</h3></legend>
-        Steam ID: <input name="username" required="required" type="text" placeholder="myusername or mymail@mail.com"/>
-        <br><br>MMR: <input name="mmr" required="required" type="number" placeholder="9001"/>
-        <br><br>Position: <input type="checkbox" name="carry" value="1" />1: Carry </>
+        <legend><h2>Get Matched</h2></legend>
+        {% if not session.logged_in %}
+            <b>Steam ID:</b> <input name="username" required="required" type="text" value="_no_user" placeholder="_no_user" readonly="readonly"/>
+        {% else %}
+            <b>Steam ID:</b> <input name="username" required="required" type="text" value="{{session.logged_name}}" placeholder="{{session.logged_name}}" readonly="readonly"/>
+        {% endif %}
+
+        <br><br><b>MMR:</b> <input name="mmr" required="required" type="number" placeholder="9001"/>
+        <br><br><b>Position:</b> <input type="checkbox" name="carry" value="1" />1: Carry </>
         <input type="checkbox" name="mid" value="1" />2: Carry (Mid)</>
         <input type="checkbox" name="off" value="1" />3: Offlane</>
         <input type="checkbox" name="support" value="1" />4: Support </>
         <input type="checkbox" name="hard_support" value="1" />5: Support :(</>
-        <br><br>Server: <input type="checkbox" name="usw" value="1" />US:W </>
+        <br><br><b>Server:</b> <input type="checkbox" name="usw" value="1" />US:W </>
         <input type="checkbox" name="use" value="1" />US:E</>
         <input type="checkbox" name="china" value="1" />CHINA</>
-        <br><br>Language: <input type="checkbox" name="English" value="1" />English </>
+        <br><br><b>Language:</b> <input type="checkbox" name="English" value="1" />English </>
         <input type="checkbox" name="Russian" value="1" />Russian</>
         <input type="checkbox" name="Chinese" value="1" />Chinese</>
     </fieldset>
