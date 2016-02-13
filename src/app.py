@@ -28,17 +28,39 @@ def search():
     positions = ', '.join(_parse_check_box(POSITIONS))
     regions = ', '.join(_parse_check_box(REGIONS))
     languages = ', '.join(_parse_check_box(LANGUAGES))
-    my_results = 'Player {0}, mmr {1}, plays positions {2}, plays on regions {3}, speaks {4}, looking for a teammate!!'.format(request.form['username'], request.form['mmr'], positions, regions, languages)
 
-    return _get_player_name()
+    player = _build_player_info(request.form['username'], request.form['mmr'], positions, regions, languages)
+    db = connect_db()
+    _insert_user_to_db(player, db)
+    user_list = _search_mmr_range(player, 200, db)
+    return ', '.join(user_list)
 
+def _insert_user_to_db(player, db):
+    result = db.players.insert_one(player)
+ 
 def _get_player_name():
     #try talk to the sample database, and return the player name
     conn = connect_db()
     players = conn.players.find()
+    ret = []
     for player in players:
         print player
-        ret = player['name']
+        ret.append(player['username'])
+    return ret
+
+# searches the db for user within mmr range, return list of players, if empty, return msg string
+def _search_mmr_range(current_player, mmr_range, db):
+    mmr_value = int(current_player['mmr'])
+    upper_range = mmr_value+mmr_range
+    lower_range = mmr_value-mmr_range
+    print upper_range
+    print lower_range
+    ret = []
+    for player in db.players.find( { "$and" : [ { "mmr": { "$lt": upper_range } }, { "mmr": { "$gt": lower_range } } ] } ):
+        if player['username'] != current_player['username'] and _has_matching_region_and_language(player,current_player):
+            ret.append(player['username'])
+    if not ret:
+        ret = ['No Matching MMR for you']
     return ret
 
 def _parse_check_box(input_list):
@@ -47,6 +69,31 @@ def _parse_check_box(input_list):
         if request.form.get(item):
             results.append(item)
     return results
+
+#returns true if player1 and player2 have matching region AND matching language
+def _has_matching_region_and_language(player1, player2):
+    '''
+    we call isdisjoint to find if common element exists, example:
+    {0, 1, 2}.isdisjoint([1])
+    False
+    '''
+    region_mismatch = set(player1['regions']).isdisjoint(player2['regions'])
+    language_mismatch = set(player1['languages']).isdisjoint(player2['languages'])
+    print region_mismatch
+    print language_mismatch
+    if region_mismatch is True or language_mismatch is True:
+        return False
+    return True
+
+def _build_player_info(username, mmr, positions, regions, languages):
+    player_info = {}
+    player_info['username'] = username
+    player_info['mmr'] = int(mmr)
+    player_info['positions'] = positions
+    player_info['regions'] = regions
+    player_info['languages'] = languages
+    #player_info['build_date'] = 
+    return player_info
 
 if __name__ == '__main__':
     app.run(debug=True)
