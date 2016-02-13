@@ -32,36 +32,27 @@ def search():
     player = _build_player_info(request.form['username'], request.form['mmr'], positions, regions, languages)
     db = connect_db()
     _insert_user_to_db(player, db)
-    user_list = _search_mmr_range(player, 200, db)
+    user_list = _search_players(player, 200, db)
     return ', '.join(user_list)
 
 def _insert_user_to_db(player, db):
     result = db.players.insert_one(player)
  
-def _get_player_name():
-    #try talk to the sample database, and return the player name
-    conn = connect_db()
-    players = conn.players.find()
-    ret = []
-    for player in players:
-        print player
-        ret.append(player['username'])
-    return ret
-
 # searches the db for user within mmr range, return list of players, if empty, return msg string
-def _search_mmr_range(current_player, mmr_range, db):
+def _search_players(current_player, mmr_range, db):
     mmr_value = int(current_player['mmr'])
     upper_range = mmr_value+mmr_range
     lower_range = mmr_value-mmr_range
-    print upper_range
-    print lower_range
     ret = []
-    for player in db.players.find( { "$and" : [ { "mmr": { "$lt": upper_range } }, { "mmr": { "$gt": lower_range } } ] } ):
+    for player in search_users_mmr(db, upper_range, lower_range):
         if player['username'] != current_player['username'] and _has_matching_region_and_language(player,current_player):
             ret.append(player['username'])
     if not ret:
         ret = ['No Matching MMR for you']
     return ret
+
+def search_users_mmr(db, upper_range, lower_range):
+    return db.players.find( { "$and" : [ { "mmr": { "$lt": upper_range } }, { "mmr": { "$gt": lower_range } } ] } )
 
 def _parse_check_box(input_list):
     results = []
