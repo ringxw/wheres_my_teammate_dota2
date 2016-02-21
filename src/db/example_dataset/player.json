@@ -1,0 +1,15 @@
+{
+    "position": "carry",
+    "name": "tester01",
+    "region": [{
+         "use": true,
+         "usw": true,
+         "china": false
+    }],
+    "language": [{
+         "english": true,
+         "chinese": true,
+         "russian": false,
+         "others": "something"
+    }]
+}

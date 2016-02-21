@@ -13,6 +13,8 @@ You can then install flask after activates virtualenv, which is what will be use
 
 *pip install https://github.com/mitsuhiko/flask/tarball/master*
 
+*pip install pymongo*
+
 After this you should see your shell that looks like this
 
 **(venv) nans-air:src njiang**

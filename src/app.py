@@ -20,7 +20,6 @@ POSITIONS = ['carry', 'mid', 'off', 'support', 'hard_support']
 REGIONS = ['usw', 'use', 'china']
 LANGUAGES = ['English','Russian','Chinese']
 
-
 #This will connect to the local mongodby
 #This connects to the client that runs on localhost port 27017, which is the default
 def connect_db():
