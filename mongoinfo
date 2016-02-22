@@ -21,9 +21,10 @@ In another terminal, you can connect to the db using the mongo shell, just run
 
 Quit the db by ctrl+c
 
+
+Make sure the directory /var/log/mongodb is owned by the user starting the process. If it's not created, create the directory
 Run mongo in as a daemon, 
    mongod --fork --logpath /var/log/mongodb/mongodb.log
-Make sure the directory /var/log/mongodb is owned by the user starting the process. 
 
 Import a sample DB into your mongo db, player.json is located in src/db/example_dataset
    mongoimport --db appdb --collection players --drop --file player.json
