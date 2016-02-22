@@ -75,13 +75,11 @@ def redo_search():
 def login():
     error = None
     if request.method == 'POST':
-        #if request.form['username'] != app.config['USERNAME']:
-        if request.form['username'] != 'OSfrog':
-            error = 'Invalid username'
-        #elif request.form['password'] != app.config['PASSWORD']:
-        elif request.form['password'] != 'bruno':
-            error = 'Invalid password'
-        else:
+        #if request.form['username'] != 'OSfrog':
+        #    error = 'Invalid username'
+        #elif request.form['password'] != 'bruno':
+        #    error = 'Invalid password'
+        #else:
             session['logged_in'] = True #seems important, that's how the page knows you are logged in.
             session['logged_name'] = request.form['username']
             session['redo_search'] = False
