@@ -40,10 +40,12 @@ def search():
     regions = ', '.join(_parse_check_box(REGIONS))
     languages = ', '.join(_parse_check_box(LANGUAGES))
     player = _build_player_info(request.form['username'], request.form['mmr'], positions, regions, languages)
+    
     db = connect_db()
-    _insert_user_to_db(player, db)
+    _insert_or_update(player, db)
     user_list = _search_players(player, 200, db)
     my_results = ', '.join(user_list)
+
     #my_results = 'Player {0}, mmr {1}, plays positions {2}, plays on regions {3}, speaks {4}, looking for a teammate!!'.format(request.form['username'], request.form['mmr'], positions, regions, languages)
     if session['logged_in']:
         session['redo_search'] = True
@@ -61,7 +63,7 @@ def redo_search():
 	
     player = _build_player_info(request.form['username'], request.form['mmr'], positions, regions, languages)
     db = connect_db()
-    _insert_user_to_db(player, db)
+    _insert_or_update(player, db)
     user_list = _search_players(player, 200, db)
     my_results = ', '.join(user_list)
     #my_results = 'REDO_SEARCH Player {0}, mmr {1}, plays positions {2}, plays on regions {3}, speaks {4}, looking for a teammate!!'.format(request.form['username'], request.form['mmr'], positions, regions, languages)
@@ -104,6 +106,19 @@ def init_session():
 def _insert_user_to_db(player, db):
     result = db.players.insert_one(player)
  
+# searches current_player in db, if player is new, creates new entry, otherwise update player entry,
+# returns 1, if username inserted is a new entry
+# returns 0, if username exists in db already and just updates the entry
+def _insert_or_update(current_player, db):
+    duplicate_name_query = search_users_name(db, current_player)
+    if duplicate_name_query.count() == 0:
+        _insert_user_to_db(current_player, db)
+        return 1
+    else :
+        _update_user_to_db(current_player, db)
+        return 0
+    return 1
+
 # searches the db for user within mmr range, return list of players, if empty, return msg string
 def _search_players(current_player, mmr_range, db):
     mmr_value = int(current_player['mmr'])
@@ -117,8 +132,23 @@ def _search_players(current_player, mmr_range, db):
         ret = ['No Matching MMR for you']
     return ret
 
+def _update_user_to_db(current_player, db):
+    result = db.players.update( {"username": current_player['username']}, \
+                               {\
+                               "username": current_player['username'],\
+                               "mmr": current_player['mmr'],\
+                               "regions": current_player['regions'],\
+                               "languages": current_player['languages'],\
+                               "positions": current_player['positions']
+                               }, \
+                               upsert=True)
+
 def search_users_mmr(db, upper_range, lower_range):
     return db.players.find( { "$and" : [ { "mmr": { "$lt": upper_range } }, { "mmr": { "$gt": lower_range } } ] } )
+
+def search_users_name(db, player):
+    return db.players.find({"username": player['username']})
+
 def _parse_check_box(input_list):
     results = []
     for item in input_list:
