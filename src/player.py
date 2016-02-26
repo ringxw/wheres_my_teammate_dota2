@@ -3,7 +3,7 @@
 import os
 
 #player object will have players basic info
-class Player:
+class Player(object):
     #construct the player object
     def __init__(self, info):
         self.info = info
