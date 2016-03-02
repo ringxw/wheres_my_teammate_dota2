@@ -75,3 +75,12 @@ class Player(object):
         player_info['languages'] = languages
         #player_info['build_date'] =
         return player_info
+
+    @staticmethod
+    def get_or_create(steam_id):
+        #rv = (username=steam_id).first()
+        if rv is None:
+            rv = player()
+            rv.username = steam_id
+            db.session.add(rv)
+        return rv
