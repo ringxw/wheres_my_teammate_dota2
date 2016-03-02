@@ -19,7 +19,7 @@ app.config.update(dict(
     SECRET_KEY="development key",
     USERNAME='admin',
     PASSWORD='default',
-    STEAM_API_KEY = 'C960FA8C55EB2DBCE4B7B1EDA4637E42'
+    STEAM_API_KEY = 'DEADBEEF-DEADBEEF'
                   ))
 
 oid = OpenID(app)
@@ -89,6 +89,9 @@ def redo_search():
     flash(my_results)
     return render_template('index.html')
 
+#OPENID LOGIN PART
+#http://stackoverflow.com/questions/353880/how-does-openid-authentication-work
+#http://tinisles.blogspot.ca/2008/02/how-does-openid-work.html
 @app.route('/login')
 @oid.loginhandler
 def login():
