@@ -19,7 +19,7 @@ app.config.update(dict(
     SECRET_KEY="development key",
     USERNAME='admin',
     PASSWORD='default',
-    STEAM_API_KEY = 'DEADBEEF-DEADBEEF'
+    STEAM_API_KEY = 'C960FA8C55EB2DBCE4B7B1EDA4637E42'
                   ))
 
 oid = OpenID(app)
@@ -82,7 +82,7 @@ def redo_search():
     current_player._update_user_to_db(db)
     # We are providing an mmr range of 200 as a search criteria
     matching_player_list = current_player.get_matching_players(200, db)
-
+    my_results = ', '.join(matching_player_list)
     session['redo_search'] = True
     #flash new player infos
     #concat player data into flash info
@@ -96,7 +96,8 @@ def redo_search():
 @oid.loginhandler
 def login():
     if g.player is not None:
-        return redirect(oid.get_next_url())
+        set_login_session_values(g.player)
+        return render_template('index.html')
     return oid.try_login('http://steamcommunity.com/openid')
 
 @oid.after_login
@@ -106,31 +107,38 @@ def create_or_login(resp):
     #steamdata = get_steam_userinfo(g.user.steam_id)
     #g.player.nickname = steamdata['personaname']
     #db.session.commit()
-    session['logged_name'] = match.group(1)
+
+    set_login_session_values(match.group(1))
+#return render_template(oid.get_next_url)
+    return render_template('index.html')
+
+def set_login_session_values(steam_id):
+    session['logged_name'] = steam_id
     session['steam_name'] = get_steam_userinfo(session['logged_name'])
     session['logged_in'] = True
     session['redo_search'] = False
+    g.player = session['logged_name']
     flash('You are logged in as %s' % session['steam_name'])
-    return redirect(oid.get_next_url())
+    return 1
 
 @app.before_request
 def before_request():
     g.player = None
-        #if 'user_id' in session:
-#g.player = Player.query.get(session['username'])
+    if 'logged_name' in session:
+        g.player = session['logged_name']
 
 @app.route('/logout')
 def logout():
-    init_session()
+
     flash('You were logged out')
-    session.pop('logged_name', None)
-    session.pop('steam_name', None)
-    return redirect(oid.get_next_url())
+    init_session()
+    return render_template('index.html')
 
 def init_session():
     session['logged_in'] = False
-    session['logged_name'] = '_no_user'
-    session['redo_search'] = False
+    session.pop('logged_name', None)
+    session.pop('redo_search', None)
+    session.pop('steam_name', None)
 
     return 1
 

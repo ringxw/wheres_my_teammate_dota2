@@ -29,9 +29,11 @@
     <fieldset>
         <legend><h2>Get Matched</h2></legend>
         {% if not session.logged_in %}
-            <b>Steam ID:</b> <input name="username" required="required" type="text" value="_no_user" placeholder="_no_user"/>
+            <b>Steam ID:</b> <input name="steamame" required="required" type="text" value="_no_user" placeholder="_no_user" readonly/>
+            <input type="hidden" name="username" required="required" type="text" value="_no_user" placeholder="_no_user" readonly/>
         {% else %}
-            <b>Steam ID:</b> <input name="username" required="required" type="text" value="{{session.logged_name}}" placeholder="{{session.logged_name}}"/>
+            <b>Steam ID:</b> <input name="steamname" required="required" type="text" value="{{session.steam_name}}" placeholder="{{session.steam_name}}" readonly/>
+            <input type="hidden" name="username" required="required" type="text" value="{{session.logged_name}}" placeholder="{{session.logged_name}}" readonly/>
         {% endif %}
 
         <br><br><b>MMR:</b> <input name="mmr" required="required" type="number" placeholder="9001"/>
