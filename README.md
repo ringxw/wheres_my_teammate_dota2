@@ -15,6 +15,8 @@ You can then install flask after activates virtualenv, which is what will be use
 
 *pip install pymongo*
 
+*pip install Flask-OpenID
+
 After this you should see your shell that looks like this
 
 **(venv) nans-air:src njiang**

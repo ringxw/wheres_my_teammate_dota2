@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import os
+import logging
 
+_LOG = logging.getLogger(__name__)
 #player object will have players basic info
 class Player(object):
     #construct the player object
@@ -14,6 +16,7 @@ class Player(object):
         #self.info['languages'] = languages
 
     def search_users_name(self, db):
+        _LOG.info('Search users for {0}'.format(self.info['username']))
         return db.players.find({"username": player.info['username']})
 
     # Find all players from the player collection that's has lower_range<mmr<upper_range
@@ -21,10 +24,8 @@ class Player(object):
     def find_matching_mmr_users(db, upper_range, lower_range):
         return db.players.find( { "$and" : [ { "mmr": { "$lt": upper_range } }, { "mmr": { "$gt": lower_range } } ] } )
 
-    def _insert_user_to_db(self, db):
-        result = db.players.insert_one(self.info)
-
     def _update_user_to_db(self, db):
+        _LOG.info('Insert user {0} to db'.format(self.info['username']))
         result = db.players.update( {"username": self.info['username']}, \
                                    self.info, \
                                    upsert=True)
@@ -40,8 +41,6 @@ class Player(object):
             # We have to make sure the search result doesn't have the current player him/herself
             if player['username'] != self.info['username'] and self.has_matching_region_and_language(player):
                 ret.append(player['username'])
-        if not ret:
-            ret = ['No Matching MMR for you']
         return ret
   
     #searches the player collection and returns all the player info that has matching mmr
@@ -76,6 +75,7 @@ class Player(object):
         #player_info['build_date'] =
         return player_info
 
+    #Should be deprecated
     @staticmethod
     def get_or_create(steam_id):
         #rv = (username=steam_id).first()

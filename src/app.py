@@ -6,11 +6,17 @@ import urllib
 import re
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, json
 from pymongo import MongoClient
+import player
 from player import Player
 from flask.ext.openid import OpenID
-
+import logging
+from logging import Formatter
+from logging.handlers import TimedRotatingFileHandler
+import requests
 
 app = Flask(__name__)
+FORMATTER = logging.Formatter("[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s")
+
 #This connects to the client that runs on localhost port 27017, which is the default
 client = MongoClient()
 
@@ -33,6 +39,7 @@ LANGUAGES = ['English','Russian','Chinese']
 #This will connect to the local mongodby
 #This connects to the client that runs on localhost port 27017, which is the default
 def connect_db():
+    app.logger.info('Initialize connection to DB')
     client = MongoClient()
     db = client.appdb
     return db
@@ -52,26 +59,27 @@ def search():
 
     player_info = Player.build_player_info(request.form['username'], request.form['mmr'], positions, regions, languages)
 
+    app.logger.info('User with playername {0} requests to search'.format(player_info['username']))
     current_player = Player(player_info)
     
     db = connect_db()
     current_player._update_user_to_db(db)
     # We are providing an mmr range of 200 as a search criteria
     matching_player_list = current_player.get_matching_players(200, db)
-    my_results = '';
-    count = 0
-    for steam_id_loop in matching_player_list:
-        if count > 0:
-            my_results = my_results+', '
-        count+=1
-        my_results = my_results + get_steam_userinfo(steam_id_loop)
-    #my_results = ', '.join(matching_player_list)
+    my_results = []
+    for matching_player_id in matching_player_list:
+        my_results.append(get_steam_userinfo(matching_player_id))
+    if my_results:
+        results = ', '.join(my_results)
+    else:
+        results = 'Could not match MMR for your profile'
 
     if session['logged_in']:
         session['redo_search'] = True
+
     #flash new player infos
     #concat player data into flash info
-    flash(my_results)
+    flash(results)
     return render_template('index.html')
 
 #TODO: Remove? I dont think we need this,  one /search should be enough to handle redo if we want different results for users
@@ -89,17 +97,18 @@ def redo_search():
     current_player._update_user_to_db(db)
     # We are providing an mmr range of 200 as a search criteria
     matching_player_list = current_player.get_matching_players(200, db)
-    count = 0
-    for steam_id_loop in matching_player_list:
-        if count > 0:
-            my_results = my_results+', '
-        count+=1
-        my_results = my_results + get_steam_userinfo(steam_id_loop)
-    #my_results = ', '.join(matching_player_list)
+    my_results = []
+    for matching_player_id in matching_player_list:
+        my_results.append(get_steam_userinfo(matching_player_id))
+    if my_results:
+        results = ', '.join(my_results)
+    else:
+        results = 'Could not match MMR for your profile'
+
     session['redo_search'] = True
     #flash new player infos
     #concat player data into flash info
-    flash(my_results)
+    flash(results)
     return render_template('index.html')
 
 #OPENID LOGIN PART
@@ -108,6 +117,7 @@ def redo_search():
 @app.route('/login')
 @oid.loginhandler
 def login():
+    app.logger.info('Login request')
     if g.player is not None:
         set_login_session_values(g.player)
         return render_template('index.html')
@@ -115,6 +125,7 @@ def login():
 
 @oid.after_login
 def create_or_login(resp):
+    app.logger.info('Login successful')
     match = _steam_id_re.search(resp.identity_url)
     #g.player = Player.get_or_create(match.group(1))
     #steamdata = get_steam_userinfo(g.user.steam_id)
@@ -131,7 +142,8 @@ def set_login_session_values(steam_id):
     session['logged_in'] = True
     session['redo_search'] = False
     g.player = session['logged_name']
-    flash('You are logged in as %s' % session['steam_name'])
+    print session['logged_name']
+    flash(u'You are logged in as {0}'.format(session['steam_name']))
     return 1
 
 @app.before_request
@@ -142,18 +154,17 @@ def before_request():
 
 @app.route('/logout')
 def logout():
-
+    app.logger.info('Logging out')
     flash('You were logged out')
     init_session()
     return render_template('index.html')
 
 def init_session():
+    app.logger.info('Initialize session')
     session['logged_in'] = False
     session.pop('logged_name', None)
     session.pop('redo_search', None)
     session.pop('steam_name', None)
-
-    return 1
 
 def _parse_check_box(input_list):
     results = []
@@ -163,16 +174,33 @@ def _parse_check_box(input_list):
     return results
 
 def get_steam_userinfo(steam_id):
+    app.logger.info('API Request GetPlayerSummaries for {0}'.format(steam_id))
     options = {
         'key': app.config['STEAM_API_KEY'],
         'steamids': steam_id
     }
     url = 'http://api.steampowered.com/ISteamUser/' \
         'GetPlayerSummaries/v0001/?%s' % urllib.urlencode(options)
-    rv = json.load(urllib2.urlopen(url))
-    print rv['response']['players']['player'][0]
-    return rv['response']['players']['player'][0]['personaname'] or {}
-#return rv or {}
+    r = requests.get(url)
+    #app.logger.info(u'Steam Requests Status Code {0}'.format(r.status_code))
+    response_dict = json.loads(r.text)
+    app.logger.info(u'Steam Requests GetPlayerSummaries {0}'.format(r.text))
+    if response_dict['response']['players']['player'][0]:
+        return response_dict['response']['players']['player'][0]['personaname']
+    else:
+        #Throw error instead of return empty
+        return ''
+
+
 if __name__ == '__main__':
+    handler = TimedRotatingFileHandler('/var/dota2teamfinder/app.log', when='H', interval=1)
+    handler.suffix = "%Y.%m.%d.%H"
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(FORMATTER)
+    #Add your file loggers here
+    loggers = [app.logger, player._LOG]
+    for logger in loggers:
+        logger.setLevel(logging.INFO)
+        logger.addHandler(handler)
     app.debug = True
     app.run()
