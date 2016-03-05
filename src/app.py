@@ -58,7 +58,14 @@ def search():
     current_player._update_user_to_db(db)
     # We are providing an mmr range of 200 as a search criteria
     matching_player_list = current_player.get_matching_players(200, db)
-    my_results = ', '.join(matching_player_list)
+    my_results = '';
+    count = 0
+    for steam_id_loop in matching_player_list:
+        if count > 0:
+            my_results = my_results+', '
+        count+=1
+        my_results = my_results + get_steam_userinfo(steam_id_loop)
+    #my_results = ', '.join(matching_player_list)
 
     if session['logged_in']:
         session['redo_search'] = True
@@ -82,7 +89,13 @@ def redo_search():
     current_player._update_user_to_db(db)
     # We are providing an mmr range of 200 as a search criteria
     matching_player_list = current_player.get_matching_players(200, db)
-    my_results = ', '.join(matching_player_list)
+    count = 0
+    for steam_id_loop in matching_player_list:
+        if count > 0:
+            my_results = my_results+', '
+        count+=1
+        my_results = my_results + get_steam_userinfo(steam_id_loop)
+    #my_results = ', '.join(matching_player_list)
     session['redo_search'] = True
     #flash new player infos
     #concat player data into flash info
@@ -157,6 +170,7 @@ def get_steam_userinfo(steam_id):
     url = 'http://api.steampowered.com/ISteamUser/' \
         'GetPlayerSummaries/v0001/?%s' % urllib.urlencode(options)
     rv = json.load(urllib2.urlopen(url))
+    print rv['response']['players']['player'][0]
     return rv['response']['players']['player'][0]['personaname'] or {}
 #return rv or {}
 if __name__ == '__main__':
