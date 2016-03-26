@@ -151,7 +151,6 @@ def set_login_session_values(steam_id):
     session['logged_in'] = True
     session['redo_search'] = False
     g.player = session['logged_name']
-    print session['logged_name']
     flash(u'You are logged in as {0}'.format(session['steam_name']))
     return 1
 

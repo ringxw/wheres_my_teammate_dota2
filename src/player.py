@@ -57,8 +57,6 @@ class Player(object):
         '''
         region_mismatch = set(self.info['regions']).isdisjoint(player2_info['regions'])
         language_mismatch = set(self.info['languages']).isdisjoint(player2_info['languages'])
-        print (region_mismatch)
-        print (language_mismatch)
         if region_mismatch is True or language_mismatch is True:
             return False
         return True
