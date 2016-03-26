@@ -53,9 +53,22 @@ def home():
 @app.route('/search', methods=['POST'])
 def search():
     #should return results html here
-    positions = ', '.join(_parse_check_box(POSITIONS))
-    regions = ', '.join(_parse_check_box(REGIONS))
-    languages = ', '.join(_parse_check_box(LANGUAGES))
+    if not _parse_check_box(POSITIONS):
+        flash('Please make sure to select positions')
+        return render_template('index.html')
+    else:
+        positions = ', '.join(_parse_check_box(POSITIONS))
+    if not _parse_check_box(REGIONS):
+        flash('Please make sure to select regions')
+        return render_template('index.html')
+    else:
+        regions = ', '.join(_parse_check_box(REGIONS))
+    if not _parse_check_box(LANGUAGES):
+        flash('Please make sure to select Languages')
+        return render_template('index.html')
+    else:
+        languages = ', '.join(_parse_check_box(LANGUAGES))
+    app.logger.info('Player input positions: {0}, regions: {1}, languages: {2}'.format(positions, regions, languages))
 
     player_info = Player.build_player_info(request.form['username'], request.form['mmr'], positions, regions, languages)
 
@@ -111,9 +124,9 @@ def redo_search():
     flash(results)
     return render_template('index.html')
 
-#OPENID LOGIN PART
-#http://stackoverflow.com/questions/353880/how-does-openid-authentication-work
-#http://tinisles.blogspot.ca/2008/02/how-does-openid-work.html
+'''OPENID LOGIN PART
+http://stackoverflow.com/questions/353880/how-does-openid-authentication-work
+http://tinisles.blogspot.ca/2008/02/how-does-openid-work.html'''
 @app.route('/login')
 @oid.loginhandler
 def login():
@@ -127,12 +140,8 @@ def login():
 def create_or_login(resp):
     app.logger.info('Login successful')
     match = _steam_id_re.search(resp.identity_url)
-    #g.player = Player.get_or_create(match.group(1))
-    #steamdata = get_steam_userinfo(g.user.steam_id)
-    #g.player.nickname = steamdata['personaname']
-    #db.session.commit()
-
     set_login_session_values(match.group(1))
+
 #return render_template(oid.get_next_url)
     return render_template('index.html')
 
