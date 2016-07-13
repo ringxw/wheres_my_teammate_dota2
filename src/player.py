@@ -10,7 +10,7 @@ class Player(object):
     def __init__(self, info):
         self.info = info
         #self.info['username'] = name
-        #self.info['mmr'] = mmr
+        #self.info['mmr'] = int(mmr)
         #self.info['positions'] = positions
         #self.info['regions'] = regions
         #self.info['languages'] = languages
@@ -66,7 +66,7 @@ class Player(object):
     def build_player_info(username, mmr, positions, regions, languages):
         player_info = {}
         player_info['username'] = username
-        player_info['mmr'] = int(mmr)
+        player_info['mmr'] = mmr
         player_info['positions'] = positions
         player_info['regions'] = regions
         player_info['languages'] = languages

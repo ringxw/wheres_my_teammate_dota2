@@ -68,9 +68,9 @@ def search():
         return render_template('index.html')
     else:
         languages = ', '.join(_parse_check_box(LANGUAGES))
-    app.logger.info('Player input positions: {0}, regions: {1}, languages: {2}'.format(positions, regions, languages))
+    app.logger.info('Player input positions: {0}, regions: {1}, languages: {2} mmr: {3}'.format(positions, regions, languages, request.form['amount']))
 
-    player_info = Player.build_player_info(request.form['username'], request.form['mmr'], positions, regions, languages)
+    player_info = Player.build_player_info(request.form['username'], request.form['amount'], positions, regions, languages)
 
     app.logger.info('User with playername {0} requests to search'.format(player_info['username']))
     current_player = Player(player_info)
@@ -103,7 +103,7 @@ def redo_search():
     regions = ', '.join(_parse_check_box(REGIONS))
     languages = ', '.join(_parse_check_box(LANGUAGES))
 
-    player_info = Player.build_player_info(request.form['username'], request.form['mmr'], positions, regions, languages)
+    player_info = Player.build_player_info(request.form['username'], request.form['amount'], positions, regions, languages)
     current_player = Player(player_info)
     
     db = connect_db()
